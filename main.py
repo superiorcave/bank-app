@@ -5,15 +5,21 @@ conn = sqlite3.connect("bank.db")
 c = conn.cursor()
 
 import bank_object
+UserBankObject = bank_object.bank(0,0,0,0,0)
 
 root = Tk()
 signin = Frame(root, width=50, height=150)
 login = Frame(root, width=50, height=150)
+homepage = Frame(root, width=50, height=150)
 signin.grid(row=0,column=0)
 
 def loadLogin():
     signin.forget()
     login.grid(row=0, column=0)
+def LoginSucessful():
+    global login
+    login.forget()
+    homepage.grid(row=0,column=0)
 
 root.title("SIGN IN")
 new_user = Button(signin, text="New User", font=("Arial", 20, "bold"))
@@ -31,15 +37,22 @@ passwordEntry.insert(0, 'Enter password here')
 def enterButtonClicked():
     user = usernameEntry.get()
     pas = passwordEntry.get()
-    c.execute(f"SELECT * FROM bank_info WHERE username = {user} AND password = {pas}")
-    for row in c:
-        print(row[0])
+    c.execute(f"SELECT * FROM bank_info WHERE username = '{user}' AND password = '{pas}'")
+    row = c.fetchone()
+    print(row)
+    global UserBankObject 
+    UserBankObject = bank_object.bank(row[0], row[1], row[2], row[3], row[4])
+    LoginSucessful()
 
 enterButton = Button(login, text='SUBMIT', font=('Arial', 20, 'bold'), command=enterButtonClicked)
 
 usernameEntry.grid(row=0, column=0)
 passwordEntry.grid(row=1, column=0)
 enterButton.grid(row=2, column=0)
+
+
+nameDisplay = Label(homepage, text=f"Hello", font=('Arial', 12, 'bold'))
+nameDisplay.grid(row=0, column=0)
 
 
 root.mainloop()
